@@ -1,5 +1,9 @@
 [package]
 name = "bootit"
+description = "Lightweight Boot Selector"
+author = "mincomk <mail@drchi.co.kr>"
+repository = "https://github.com/mincomk/bootit"
+license = "MIT"
 version = "0.1.0"
 edition = "2024"
 
