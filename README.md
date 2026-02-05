@@ -18,3 +18,12 @@ or
 it 2
 ```
 or whatever. It does not change boot order.
+
+## Installation
+### Cargo
+```bash
+cargo install bootit
+```
+
+## Contributing
+Contributions are welcome! Feel free to open issues or submit pull requests on the GitHub repository
