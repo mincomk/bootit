@@ -14,3 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix `allow-non-admin` flag not making the owner of file root.
+
+## [0.1.2] - 2026-02-06
+
+### Fixed
+- Fix Windows build issue
