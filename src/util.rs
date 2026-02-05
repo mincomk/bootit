@@ -16,6 +16,7 @@ pub fn check_privileges() -> miette::Result<()> {
     Ok(())
 }
 
+#[allow(unused)]
 pub fn find_it() -> miette::Result<PathBuf> {
     if let Ok(path) = which("it") {
         return Ok(path);

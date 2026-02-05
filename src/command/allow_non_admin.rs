@@ -1,13 +1,13 @@
-use miette::IntoDiagnostic;
-use std::fs;
-use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 
-use crate::util;
-
+#[allow(unused)]
 pub fn allow_non_admin(it_path: Option<PathBuf>) -> miette::Result<()> {
     #[cfg(target_os = "linux")]
     {
+        use std::fs;
+        use miette::IntoDiagnostic;
+        use crate::util;
+
         let it_path = match it_path {
             Some(path) => path,
             None => util::find_it()?,
@@ -15,6 +15,7 @@ pub fn allow_non_admin(it_path: Option<PathBuf>) -> miette::Result<()> {
 
         // set the owner to root
         use nix::unistd::{Gid, Uid, chown};
+        use std::os::unix::fs::PermissionsExt;
         chown(&it_path, Some(Uid::from_raw(0)), Some(Gid::from_raw(0))).into_diagnostic()?;
 
         let metadata = fs::metadata(&it_path).into_diagnostic()?;
