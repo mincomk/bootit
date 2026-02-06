@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change default config file path in Linux to `/etc/bootit.yaml`.
 - Change default config file path in Windows to `C:\ProgramData\bootit\config.yaml`.
 
-## [0.2.1] - 2026-02-06
+## [0.2.2] - 2026-02-06
 
 ### Fixed
 - Fix Windows installer build issue.
