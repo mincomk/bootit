@@ -19,3 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix Windows build issue
+
+## [0.2.0] - 2026-02-06
+
+### Added
+- Add Windows support.
+- Add `BOOTIT_CONFIG_PATH` environment variable to specify custom config file path.
+
+### Changed
+- Change default config file path in Linux to `/etc/bootit.yaml`.
+- Change default config file path in Windows to `C:\ProgramData\bootit\config.yaml`.
