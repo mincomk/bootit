@@ -35,9 +35,15 @@ pub fn allow_non_admin(it_path: Option<PathBuf>) -> miette::Result<()> {
         println!("Non-admin users can now use it command to boot.");
     }
 
-    #[cfg(not(target_os = "linux"))]
+    #[cfg(target_os = "windows")]
     {
-        println!("Setting setuid bit is not supported on this operating system.");
+        println!("The setuid mechanism is not available on Windows.");
+        println!("Run bootit from an elevated terminal (right-click -> Run as administrator).");
+    }
+
+    #[cfg(not(any(target_os = "linux", target_os = "windows")))]
+    {
+        println!("allow-non-admin is not supported on this operating system.");
     }
 
     Ok(())

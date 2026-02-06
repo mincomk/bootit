@@ -12,12 +12,21 @@ derive_more = { version = "2.1.1", features = ["from", "into", "from_str", "add"
 dirs = "6.0.0"
 efivar = "2.0.0"
 inquire = "0.9.2"
-libc = "0.2.180"
 miette = { version = "7.6.0", features = ["fancy"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_yaml = "0.9"
 system_shutdown = "4.1.0"
 which = "8.0.0"
 
+[target.'cfg(unix)'.dependencies]
+libc = "0.2.180"
+
 [target.'cfg(target_os = "linux")'.dependencies]
 nix = { version = "0.31.1", features = ["fs", "user"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-sys = { version = "0.59", features = [
+    "Win32_Security",
+    "Win32_System_Threading",
+    "Win32_Foundation",
+] }
