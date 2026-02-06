@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
+  cargo-publish:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,3 +20,20 @@ jobs:
         run: cargo publish --allow-dirty
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+  windows-msi:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install WiX Toolset
+        run: |
+          dotnet tool install --global wix
+          cargo install cargo-wix
+      - name: Build MSI
+        run: cargo wix --output target/release/bootit-$(cargo pkgid | sed 's/.*#//').msi
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/release/*.msi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
