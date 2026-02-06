@@ -33,7 +33,7 @@ pub fn boot(config_path: PathBuf, target: String, no_reboot: bool) -> miette::Re
             println!("Resolving alias '{}'", alias);
             let config = config::open_config(config_path)?;
 
-            if let Some(ref alias) = config.find_alias(&alias) {
+            if let Some(alias) = config.find_alias(&alias) {
                 let entry = efi::find_boot_entry_by_identifier(&system, &alias.identifier)?
                     .ok_or_else(|| miette!("Boot entry not found"))?;
                 println!(

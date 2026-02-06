@@ -15,12 +15,7 @@ pub struct ConfigHandle {
 
 impl ConfigHandle {
     pub fn find_alias<'a>(&'a self, name: &str) -> Option<&'a crate::BootAlias> {
-        for alias in &self.config.aliases {
-            if alias.name == name {
-                return Some(alias);
-            }
-        }
-        None
+        self.config.aliases.iter().find(|&alias| alias.name == name).map(|v| v as _)
     }
 
     pub fn aliases(&self) -> &Vec<crate::BootAlias> {
@@ -104,7 +99,7 @@ fn load_config(path: impl AsRef<Path>) -> miette::Result<Config> {
         Err(_) => {
             let default_config = Config::default();
             save_config(&path, &default_config)?;
-            return Ok(default_config);
+            Ok(default_config)
         }
     }
 }
@@ -128,7 +123,7 @@ pub fn determine_config_path(path: Option<PathBuf>) -> miette::Result<PathBuf> {
 }
 
 fn default_config_path() -> PathBuf {
-    // HEURISTIC: BOOTIT_CONFIG_PATH, $HOME/.config/bootit.yaml,
+    // HEURISTIC: BOOTIT_CONFIG_PATH, /etc/bootit.yaml,
     // C:\ProgramData\bootit\config.yaml
 
     if let Ok(env_path) = std::env::var("BOOTIT_CONFIG_PATH") {
@@ -138,10 +133,8 @@ fn default_config_path() -> PathBuf {
     if cfg!(target_os = "windows") {
         let program_data =
             std::env::var("PROGRAMDATA").unwrap_or_else(|_| "C:\\ProgramData".to_string());
-        return PathBuf::from(format!("{}\\bootit\\config.yaml", program_data));
+        PathBuf::from(format!("{}\\bootit\\config.yaml", program_data))
     } else {
-        // using HOME, to support SETUID
-        let home_env = std::env::var("HOME").unwrap_or_else(|_| ".".to_string());
-        return PathBuf::from(format!("{}/.config/bootit.yaml", home_env));
+        PathBuf::from("/etc/bootit.yaml".to_string())
     }
 }

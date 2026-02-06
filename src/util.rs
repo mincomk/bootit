@@ -62,8 +62,8 @@ fn is_elevated() -> bool {
 #[allow(unused)]
 pub fn find_it() -> miette::Result<PathBuf> {
     if let Ok(path) = which("it") {
-        return Ok(path);
+        Ok(path)
     } else {
-        return Err(miette!("Could not find 'it' in PATH. Please install it."));
+        Err(miette!("Could not find 'it' in PATH. Please install it."))
     }
 }
