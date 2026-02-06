@@ -128,7 +128,20 @@ pub fn determine_config_path(path: Option<PathBuf>) -> miette::Result<PathBuf> {
 }
 
 fn default_config_path() -> PathBuf {
-    // ~/.config/bootit.yaml
-    let home_dir = dirs::home_dir().expect("Could not determine home directory");
-    home_dir.join(".config").join("bootit.yaml")
+    // HEURISTIC: BOOTIT_CONFIG_PATH, $HOME/.config/bootit.yaml,
+    // C:\ProgramData\bootit\config.yaml
+
+    if let Ok(env_path) = std::env::var("BOOTIT_CONFIG_PATH") {
+        return PathBuf::from(env_path);
+    }
+
+    if cfg!(target_os = "windows") {
+        let program_data =
+            std::env::var("PROGRAMDATA").unwrap_or_else(|_| "C:\\ProgramData".to_string());
+        return PathBuf::from(format!("{}\\bootit\\config.yaml", program_data));
+    } else {
+        // using HOME, to support SETUID
+        let home_env = std::env::var("HOME").unwrap_or_else(|_| ".".to_string());
+        return PathBuf::from(format!("{}/.config/bootit.yaml", home_env));
+    }
 }
