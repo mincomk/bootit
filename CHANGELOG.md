@@ -39,3 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Change ID option of `bootit alias add` to hexadecimal.
+
+## [0.4.0] - 2026-02-09
+
+### Fixed
+- Add fallback `sh -c "reboot -f"` for systems like busybox.

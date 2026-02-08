@@ -1,5 +1,5 @@
 use miette::{IntoDiagnostic, miette};
-use std::path::PathBuf;
+use std::{path::PathBuf, process::Command};
 
 use crate::{config, efi};
 
@@ -48,7 +48,14 @@ pub fn boot(config_path: PathBuf, target: String, no_reboot: bool) -> miette::Re
     }
 
     if !no_reboot {
-        system_shutdown::reboot().into_diagnostic()?;
+        if let Err(_) = system_shutdown::reboot() {
+            // failed to reboot. maybe try busybox
+
+            Command::new("/bin/sh")
+                .args(&["-c", "reboot -f"])
+                .status()
+                .into_diagnostic()?;
+        }
     }
 
     Ok(())
