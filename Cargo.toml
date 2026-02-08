@@ -4,7 +4,7 @@ description = "Lightweight Boot Selector"
 repository = "https://github.com/mincomk/bootit"
 authors = ["mincomk <mail@drchi.co.kr>"]
 license = "MIT"
-version = "0.2.2"
+version = "0.3.0"
 edition = "2024"
 
 [dependencies]
