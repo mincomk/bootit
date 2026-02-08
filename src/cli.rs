@@ -47,7 +47,7 @@ pub enum AliasCommands {
     Add {
         #[arg(help = "Name of the alias")]
         name: String,
-        #[arg(help = "Current ID of the boot entry")]
+        #[arg(help = "Current ID of the boot entry", value_parser = parse_hex)]
         id: u16,
     },
     #[command(about = "Remove an existing boot alias")]
@@ -60,4 +60,8 @@ pub enum AliasCommands {
         #[arg(short, long, help = "Confirm clearing all aliases")]
         yes: bool,
     },
+}
+
+fn parse_hex(s: &str) -> Result<u16, String> {
+    u16::from_str_radix(s, 16).map_err(|e| format!("Invalid hex number: {}", e))
 }
