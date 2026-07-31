@@ -37,5 +37,34 @@ it windows # No sudo required!
 cargo install bootit
 ```
 
+## Troubleshooting
+
+### `sudo: bootit: command not found` after `cargo install`
+
+`cargo install` puts `bootit` in `~/.cargo/bin`, which is on your user PATH
+but not on sudo's `secure_path` (the list of directories sudo searches when
+you run `sudo <command>`). As a result, the first command fails and the
+second one cannot even find the binary:
+
+```bash
+$ bootit scan
+Error: This program must be run as root (try: sudo bootit ...)
+
+$ sudo bootit scan
+sudo: bootit: command not found
+```
+
+Run it with the full path instead:
+
+```bash
+sudo "$(which bootit)" scan
+```
+
+or link it into a system directory once so plain `sudo bootit` works:
+
+```bash
+sudo ln -s "$(which bootit)" /usr/local/bin/bootit
+```
+
 ## Contributing
 Contributions are welcome! Feel free to open issues or submit pull requests on the GitHub repository
