@@ -33,3 +33,22 @@ jobs:
         run: cargo build
       - name: Test
         run: cargo test
+
+  flake:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - name: Check the flake evaluates
+        run: nix flake check --no-build
+      - name: Build
+        run: nix build .#default --print-build-logs
+      - name: Run
+        run: |
+          out=$(nix build .#default --no-link --print-out-paths)
+          ls "$out/bin" # both `bootit` and `it` must be installed
+          nix run .#default -- --version
