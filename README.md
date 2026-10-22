@@ -50,13 +50,16 @@ sudo bootit allow-non-root
 it windows
 ```
 
-On NixOS you can also pull it from the flake as a package:
+On NixOS, add the flake as an input and take the package from it:
 ```nix
-{
-  inputs.bootit.url = "github:mincomk/bootit";
-  # then, in your configuration:
-  environment.systemPackages = [ inputs.bootit.packages.${pkgs.system}.default ];
-}
+# flake.nix
+inputs.bootit.url = "github:mincomk/bootit";
+```
+```nix
+# configuration.nix
+environment.systemPackages = [
+  inputs.bootit.packages.${pkgs.stdenv.hostPlatform.system}.default
+];
 ```
 
 ## Troubleshooting
