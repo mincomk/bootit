@@ -1,41 +1,64 @@
 {
-  description = "A very cool CLI tool";
+  description = "bootit: a lightweight next-boot selector";
 
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-    rust-overlay.url = "github:oxalica/rust-overlay";
-    crane.url = "github:ipetkov/crane";
-  };
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-  outputs = { self, nixpkgs, flake-utils, rust-overlay, crane }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [ (import rust-overlay) ];
+  outputs =
+    { self, nixpkgs }:
+    let
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
+
+      version = (builtins.fromTOML (builtins.readFile ./Cargo.toml)).package.version;
+    in
+    {
+      packages = forAllSystems (pkgs: rec {
+        bootit = pkgs.rustPlatform.buildRustPackage {
+          pname = "bootit";
+          inherit version;
+          src = ./.;
+
+          cargoLock.lockFile = ./Cargo.lock;
+
+          # `it` is a second bin in the same crate; buildRustPackage installs
+          # every bin, so both `bootit` and `it` land in $out/bin.
+          meta = {
+            description = "Lightweight next-boot selector";
+            homepage = "https://github.com/mincomk/bootit";
+            license = pkgs.lib.licenses.mit;
+            mainProgram = "bootit";
+            platforms = pkgs.lib.platforms.linux;
+          };
         };
 
-        rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
-        craneLib = (crane.mkLib pkgs).overrideToolchain rustToolchain;
+        default = bootit;
+      });
 
-        bootit = craneLib.buildPackage {
-          src = craneLib.cleanCargoSource (craneLib.path ./.);
-          buildInputs = with pkgs; [
-          ] ++ lib.optionals stdenv.isDarwin [
-            darwin.apple_sdk.frameworks.Security
-          ];
-        };
-      in
-      {
-        packages.default = bootit;
-
-        apps.default = flake-utils.lib.mkApp {
-          drv = bootit;
-        };
-
-        devShells.default = pkgs.mkShell {
-          buildInputs = [ rustToolchain pkgs.cargo-edit pkgs.rust-analyzer ];
+      apps = forAllSystems (pkgs: {
+        default = {
+          type = "app";
+          program = "${self.packages.${pkgs.stdenv.hostPlatform.system}.bootit}/bin/bootit";
+          meta.description = "Run bootit without installing it";
         };
       });
+
+      checks = forAllSystems (pkgs: {
+        bootit = self.packages.${pkgs.stdenv.hostPlatform.system}.bootit;
+      });
+
+      devShells = forAllSystems (pkgs: {
+        default = pkgs.mkShell {
+          packages = [
+            pkgs.cargo
+            pkgs.rustc
+            pkgs.rustfmt
+            pkgs.clippy
+            pkgs.rust-analyzer
+          ];
+        };
+      });
+    };
 }

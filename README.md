@@ -37,6 +37,28 @@ it windows # No sudo required!
 cargo install bootit
 ```
 
+### Nix
+Run it straight from the flake, no install step:
+```bash
+nix run github:mincomk/bootit -- scan
+```
+
+Or install it into your profile, which gives you both `bootit` and `it`:
+```bash
+nix profile install github:mincomk/bootit
+sudo bootit allow-non-root
+it windows
+```
+
+On NixOS you can also pull it from the flake as a package:
+```nix
+{
+  inputs.bootit.url = "github:mincomk/bootit";
+  # then, in your configuration:
+  environment.systemPackages = [ inputs.bootit.packages.${pkgs.system}.default ];
+}
+```
+
 ## Troubleshooting
 
 ### `sudo: bootit: command not found` after `cargo install`
